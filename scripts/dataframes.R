@@ -63,3 +63,5 @@ my_list$names
 View(my_list)
 
 surveys[[3]] #extract the 3rd column
+
+#strg + shift + c --> transforms marked lines into comments all at once
