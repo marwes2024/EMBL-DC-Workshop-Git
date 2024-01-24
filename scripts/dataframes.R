@@ -65,3 +65,58 @@ View(my_list)
 surveys[[3]] #extract the 3rd column
 
 #strg + shift + c --> transforms marked lines into comments all at once
+
+#Factors
+#useful for categorical data
+#predefined values called "levels"
+surveys$sex
+surveys$sex <- factor(surveys$sex)
+#define new factor: factor(c(1, 2, 1, 1, 2))
+#default: levels sorted alphabetically
+levels(surveys$sex)
+nlevels(surveys$sex)
+
+sex <- factor(c("male", "female", "female", "male"))
+sex <- factor(sex, levels = c("male", "female"))
+
+#exercise
+surveys$taxa <- factor(surveys$taxa)
+surveys$genus <- factor(surveys$genus)
+
+class(surveys$taxa) #output factor
+
+View(surveys)
+summary(surveys)
+
+levels(surveys$taxa)
+sum(surveys$taxa == "Rabbit") #output 75
+nlevels(surveys$genus) #output 26
+
+#convert factors
+as.character(sex)
+
+
+year_fct <- factor(c(1990, 1983, 1977, 1997))
+as.numeric(year_fct) #output [1] 3 2 1 4
+as.numeric(as.character(year_fct)) #works but not the nicest way
+as.numeric(levels(year_fct))[year_fct] 
+#extract levels, convert into numbers (numeric version of levels, but not vector) 
+#--> year_fct used for indexing of levels
+
+#Renaming factors
+summary(surveys$sex)
+sex <- surveys$sex
+plot(sex) #plot with 2 columns
+levels(sex) #output [1] "F" "M"
+sex <- addNA(sex)
+levels(sex) #output [1] "F" "M" NA 
+levels(sex)[3] <- "undertermined"
+levels(sex) #output [1] "F" "M" "undertermined" 
+plot(sex) #plot with additional column "undetermined"
+
+levels(sex)[1:2] <- c("female", "male")
+plot(sex)
+
+#change order of columns in plot by changes order of levels in factor
+sex <- factor(sex, levels = c("undertermined", "female", "male"))
+plot(sex)
