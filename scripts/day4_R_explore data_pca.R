@@ -198,10 +198,36 @@ hclust_matrix <- trans_cts %>%
   as.matrix() #function to compute distance needs matrix
 
 rownames(hclust_matrix) <- trans_cts$gene
-hclust_matrix_cand <- hclust_matrix[candidate_genes, ]
+hclust_matrix <- hclust_matrix[candidate_genes, ]
 #dim(hclust_matrix_cand)
-hclust_matrix_cand <- hclust_matrix_cand %>% 
+hclust_matrix <- hclust_matrix %>% 
   t() %>% 
-  scale() %>%  #applies transformation to cols -_> to compute z-score for genes, we have to transpose
+  scale() %>%  #applies transformation/scaling to cols -> to compute z-score for genes, we have to transpose
   t()
+#z-score indicates how many standard deviation a gene is away from the mean 
+#(more independent of absolute expression level compared to foldchange)
 
+gene_dist <- dist(hclust_matrix)
+
+#hierarchical clustering
+gene_hclust <- hclust(gene_dist, method = "complete") #use help function to find out which other methods are available
+plot(gene_hclust, labels = F)
+abline(h = 10, col = "brown", lwd = 2)
+
+#make clusters based on the number that I want
+cutree(gene_hclust, k = 5)
+gene_cluster <- cutree(gene_hclust, k = 5) %>% 
+  enframe() %>% 
+  rename(gene = name, cluster = value)
+
+trans_cts_cluster <- trans_cts_mean_scaled %>% 
+  inner_join(gene_cluster, by = "gene")
+
+trans_cts_cluster %>% 
+  ggplot(aes(x = minute, y = mean_cts_scaled)) +
+  geom_line(aes(group = gene)) +
+  facet_grid(cols = vars(cluster), rows = vars(strain))
+#this code doesn't work but don't know why
+
+library(ComplexHeatmap)
+Heatmap(hclust_matrix, show_row_names = F)
